@@ -1,6 +1,7 @@
 
 # pip install pywhatkit
 # pip install SpeechRecognition
+# pip install pyttsx3
 # pip install PyAudio : Download the weheel file from src folder of the repository and then in command prompt give proper directory and then give command: pip install PyAudio-0.2.11-cp39-cp39-win_amd64.whl 
 
 
