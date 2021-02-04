@@ -37,6 +37,37 @@ def mini():
         pass
 
 
+
+def whatsapp():
+    talk("Whom to Send")
+    with rec.Microphone() as source:
+        voice = listener.record(source, 3)
+        contact = listener.recognize_google(voice)
+        friend = contact.lower()
+    talk("What is the message")
+    with rec.Microphone() as source:
+        voice = listener.listen(source)
+        message = listener.recognize_google(voice)
+    hour = datetime.datetime.now().strftime('%H')
+    minute = datetime.datetime.now().strftime('%M')
+    talk(f"Sending message to {friend}")
+    mobile = ['+918097985835', '+919136298868', '+91918329863550', '+919920130735']
+    if 'myself' in friend:
+        m = 0
+    elif 'bhavesh' in friend:
+        m = 1
+    elif 'yogesh' in friend:
+        m = 2
+    elif 'mom' or 'mum' in friend:
+        m = 3
+    else:
+        talk('Sorry No Contact Found')
+    try:
+        pywhatkit.sendwhatmsg(mobile[m], message, int(hour), int(minute) + 1, 10, True)
+    except:
+        pass
+
+
 def run_mini():
     task = mini()
     try:
@@ -52,10 +83,11 @@ def run_mini():
             answer = wikipedia.summary(person, 1)
             print(answer)
             talk(answer)
+        elif 'send a message' in task:
+            whatsapp()
         else:
             talk('Sorry Could not Understand')
     except:
         pass
-
-
-run_mini()
+    
+    run_mini()
