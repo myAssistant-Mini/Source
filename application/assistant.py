@@ -1,20 +1,24 @@
 
 # pip install pywhatkit
 # pip install SpeechRecognition
-# pip install PyAudio : Download the weheel file from src folder of the repository and then in command prompt give proper directory and then give command: pip install PyAudio-0.2.11-cp39-cp39-win_amd64.whl
+# pip install pyttsx3
+# pip install PyAudio : Download the wheel file from src folder of the repository and then in command prompt give proper directory and then give command: pip install PyAudio-0.2.11-cp39-cp39-win_amd64.whl
 
+#IMPORTANT pip install pyowm 
 
-# Normal Working of Mini
-# Oop madhe aapan data lapavto user pasun ani fkt tyala functionality deto :)
-# mini.py ch run honar, aplyala fkt ikde je kai aahet te changes marave lagnr :)
+# Changed control flow because it was inappropriate. 'Hello mini' input was of no meaning due to that flow. 
+# Now mini.py calls mini() -> if user speaks Hello Mini -> run_mini() and asks for what he wants -> executes task -> if user says nothing then back to Mini is Listening
+#                          -> if user says stop -> EXIT
+#             -> if user says nothing (which we will have to while explaining) -> it will recursivelyy say Mini is listening after each 10 sec until says Stop or Hello mini 
+# Added current weather, today's date, what is and where is for wiki summary, added self intro, explore creators and miscellaneous changes like time.sleep()
 
-
-from pyttsx3 import engine
+import requests
 import speech_recognition as rec
 import pyttsx3
 import pywhatkit
 import datetime
 import wikipedia
+import time
 
 listener = rec.Recognizer()
 engine = pyttsx3.init()
@@ -31,27 +35,7 @@ class Mini:
         engine.say(text)
         engine.runAndWait()
 
-    def mini(self):
-        try:
-
-            self.talk("Mini is Listening. What Can I do for you")
-
-            with rec.Microphone() as source:
-                voice = listener.record(source, 5)
-                command = listener.recognize_google(voice)
-                task = command.lower()
-
-            if 'hello mini' in command:
-                task = task.replace('hello mini', "")
-                return task
-
-            else:
-                return 'invalid'
-        except:
-            pass
-
     def whatsapp(self):
-        m = 0
         self.talk("Whom to Send")
         with rec.Microphone() as source:
             voice = listener.record(source, 3)
@@ -69,22 +53,96 @@ class Mini:
 
         self.talk(f"Sending message to {friend}")
 
-        mobile = {'bhavesh': '+919136298868', 'atharva': '+918097985835',
-                  'yogesh': '+91918329863550', 'mom': '+919920130735'}
+        mobile = {'bhavesh': '+919136298868', 'atharva': '+918097985835',  'yogesh': '+918329863550'}
 
-        if(mobile[friend] == None):
+        if mobile[friend] is None:
             self.talk('Sorry No Contact Found')
             return ''
 
         try:
-            pywhatkit.sendwhatmsg(mobile[friend], message, int(
-                hour), int(minute) + 1, 10, True)
+            pywhatkit.sendwhatmsg(mobile[friend], message, int(hour), int(minute) + 1, 10, True)
+        except:
+            pass
 
+    def weather(self):
+        BASE_URL = "http://api.openweathermap.org/data/2.5/weather?"
+
+        self.talk("Which City")
+        with rec.Microphone() as source:
+            voice = listener.record(source, 3)
+            city = listener.recognize_google(voice)
+
+        URL = BASE_URL + "q=" + city + "&appid=" + '33998c345736e3692ba2a0fd8a10e828'
+        response = requests.get(URL)
+
+        if response.status_code == 200:
+            data = response.json()
+
+            main = data['main']
+            temperature = main['temp'] - 273.15
+            humidity = main['humidity']
+            pressure = main['pressure']
+            report = data['weather']
+
+            print(f'City: {city}')
+            self.talk(f'Weather For City {city}')
+            print(f"Temperature: {temperature} C")
+            self.talk(f"Temperature: {temperature} degree celsius")
+            print(f"Weather Report: {report[0]['description']}")
+            self.talk(f"Weather Report: {report[0]['description']}")
+            print(f"Pressure: {pressure}")
+            self.talk(f"Pressure: {pressure}")
+            print(f"Humidity: {humidity}")
+            self.talk(f"Humidity: {humidity}")
+
+        else:
+            print("Sorry Could Not Understand")
+
+    def info(self, person):
+        answer = wikipedia.summary(person, 1)
+        print(answer)
+        self.talk(answer)
+
+    def creators(self):
+        try:
+            self.talk("Which creator you want to explore")
+            with rec.Microphone() as source:
+                voice = listener.record(source, 3)
+                command = listener.recognize_google(voice)
+                name = command.lower()
+
+                self.talk(f'Here are some cool facts about {name}')
+                self.talk(f'{name} is a student of Datta Meghe College of Engineering.')
+                self.talk(f'{name} loves to play cricket and hang out with his friends.')
+                self.talk(f'{name} took great efforts to create me.')
+            time.sleep(5)
+        except:
+            pass
+
+    def intro(self):
+        self.talk("Hello everyone, I am Mini, a intelligent Search Engine and a super useful voice Assistant."
+                  "I try my best to automate all tasks and help you in your work")
+
+    def mini(self):
+        try:
+            self.talk("Mini is Listening")
+            with rec.Microphone() as source:
+                voice = listener.record(source, 5)
+                command = listener.recognize_google(voice)
+                task = command.lower()
+
+            if 'hello mini' in task:
+                self.run_mini()
+            elif 'stop' in task:
+                self.talk('Thank You. Have a nice day.')
+                return 'stop'
+            else:
+                time.sleep(10)
+                self.mini()
         except:
             pass
 
     def run_mini(self):
-        task = self.mini()
         try:
             self.talk("How Can I help You?")
             with rec.Microphone() as source:
@@ -92,7 +150,10 @@ class Mini:
                 command = listener.recognize_google(voice)
                 task = command.lower()
 
-            if 'play' in task:
+            if 'intro' in task:
+                self.intro()
+
+            elif 'play' in task:
                 song = task.replace('play', "")
                 self.talk(f"playing {song}")
                 pywhatkit.playonyt(song)
@@ -101,22 +162,34 @@ class Mini:
                 time = datetime.datetime.now().strftime('%I: %M %p')
                 self.talk("Current time is " + time)
 
-            elif 'who' in task:
-                person = task.replace('mini who is', "")
-                answer = wikipedia.summary(person, 1)
-                (answer)
-                self.talk(answer)
+            elif 'date' in task:
+                date = datetime.date.today()
+                self.talk(f"Today's Date is {date}")
 
-            elif 'stop' in task:
-                return 'stop'
+            elif 'who' in task:
+                person = task.replace('who is', "")
+                self.info(person)
+
+            elif 'what' in task:
+                person = task.replace('what is', "")
+                self.info(person)
+
+            elif 'where' in task:
+                person = task.replace('where is', "")
+                self.info(person)
+
+            elif 'explore' in task:
+                self.creators()
 
             elif 'send a message' in task:
                 self.whatsapp()
+
+            elif 'weather' in task:
+                self.weather()
 
             else:
                 self.talk('Sorry Could not Understand')
         except:
             pass
-
-
-# Fkt Functionalitis add krayche!!!!  :)
+        finally:
+            time.sleep(3)
