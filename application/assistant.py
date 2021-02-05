@@ -6,11 +6,7 @@
 
 #IMPORTANT pip install pyowm 
 
-# Changed control flow because it was inappropriate. 'Hello mini' input was of no meaning due to that flow. 
-# Now mini.py calls mini() -> if user speaks Hello Mini -> run_mini() and asks for what he wants -> executes task -> if user says nothing then back to Mini is Listening
-#                          -> if user says stop -> EXIT
-#             -> if user says nothing (which we will have to while explaining) -> it will recursivelyy say Mini is listening after each 10 sec until says Stop or Hello mini 
-# Added current weather, today's date, what is and where is for wiki summary, added self intro, explore creators and miscellaneous changes like time.sleep()
+# Changed control flow. Microphone keeps listening. When user says 'hello mini' then it asks for task.
 
 import requests
 import speech_recognition as rec
@@ -18,7 +14,6 @@ import pyttsx3
 import pywhatkit
 import datetime
 import wikipedia
-import time
 
 listener = rec.Recognizer()
 engine = pyttsx3.init()
@@ -115,7 +110,7 @@ class Mini:
                 self.talk(f'{name} is a student of Datta Meghe College of Engineering.')
                 self.talk(f'{name} loves to play cricket and hang out with his friends.')
                 self.talk(f'{name} took great efforts to create me.')
-            time.sleep(5)
+
         except:
             pass
 
@@ -125,7 +120,6 @@ class Mini:
 
     def mini(self):
         try:
-            self.talk("Mini is Listening")
             with rec.Microphone() as source:
                 voice = listener.record(source, 5)
                 command = listener.recognize_google(voice)
@@ -133,22 +127,23 @@ class Mini:
 
             if 'hello mini' in task:
                 self.run_mini()
+
             elif 'stop' in task:
                 self.talk('Thank You. Have a nice day.')
                 return 'stop'
             else:
-                time.sleep(10)
                 self.mini()
         except:
             pass
 
     def run_mini(self):
         try:
-            self.talk("How Can I help You?")
+            self.talk("Mini is Listening.. How Can I help You?")
             with rec.Microphone() as source:
                 voice = listener.record(source, 5)
                 command = listener.recognize_google(voice)
                 task = command.lower()
+                task = task.replace('mini', " ")
 
             if 'intro' in task:
                 self.intro()
@@ -170,6 +165,9 @@ class Mini:
                 person = task.replace('who is', "")
                 self.info(person)
 
+            elif 'weather' in task:
+                self.weather()
+
             elif 'what' in task:
                 person = task.replace('what is', "")
                 self.info(person)
@@ -184,12 +182,7 @@ class Mini:
             elif 'send a message' in task:
                 self.whatsapp()
 
-            elif 'weather' in task:
-                self.weather()
-
             else:
                 self.talk('Sorry Could not Understand')
         except:
             pass
-        finally:
-            time.sleep(3)
