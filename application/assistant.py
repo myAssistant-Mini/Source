@@ -4,10 +4,9 @@
 # pip install SpeechRecognition
 # pip install pyttsx3
 # pip install PyAudio : Download the wheel file from src folder of the repository and then in command prompt give proper directory and then give command: pip install PyAudio-0.2.11-cp39-cp39-win_amd64.whl
+# pip install pyowm
 
-#IMPORTANT pip install pyowm 
-
-# Changed control flow. Microphone keeps listening. When user says 'hello mini' then it asks for task.
+#IMPORTANT pip install tkvideo
 
 import requests
 import speech_recognition as rec
@@ -31,18 +30,19 @@ class Mini:
         engine.say(text)
         engine.runAndWait()
 
-    def whatsapp(self):
-        self.talk("Whom to Send")
+    def inp(self):
         with rec.Microphone() as source:
             voice = listener.record(source, 3)
-            contact = listener.recognize_google(voice)
-            friend = contact.lower()
+            command = listener.recognize_google(voice)
+            low = command.lower()
+            return low
+
+    def whatsapp(self):
+        self.talk("Whom to Send")
+        friend = self.inp()
 
         self.talk("What is the message")
-
-        with rec.Microphone() as source:
-            voice = listener.listen(source)
-            message = listener.recognize_google(voice)
+        message = self.inp()
 
         hour = datetime.datetime.now().strftime('%H')
         minute = datetime.datetime.now().strftime('%M')
@@ -64,9 +64,7 @@ class Mini:
         BASE_URL = "http://api.openweathermap.org/data/2.5/weather?"
 
         self.talk("Which City")
-        with rec.Microphone() as source:
-            voice = listener.record(source, 3)
-            city = listener.recognize_google(voice)
+        city = self.inp()
 
         URL = BASE_URL + "q=" + city + "&appid=" + '33998c345736e3692ba2a0fd8a10e828'
         response = requests.get(URL)
@@ -102,15 +100,12 @@ class Mini:
     def creators(self):
         try:
             self.talk("Which creator you want to explore")
-            with rec.Microphone() as source:
-                voice = listener.record(source, 3)
-                command = listener.recognize_google(voice)
-                name = command.lower()
+            name = self.inp()
 
-                self.talk(f'Here are some cool facts about {name}')
-                self.talk(f'{name} is a student of Datta Meghe College of Engineering.')
-                self.talk(f'{name} loves to play cricket and hang out with his friends.')
-                self.talk(f'{name} took great efforts to create me.')
+            self.talk(f'Here are some cool facts about {name}')
+            self.talk(f'{name} is a student of Datta Meghe College of Engineering.')
+            self.talk(f'{name} loves to play cricket and hang out with his friends.')
+            self.talk(f'{name} took great efforts to create me.')
 
         except:
             pass
@@ -121,10 +116,7 @@ class Mini:
 
     def mini(self):
         try:
-            with rec.Microphone() as source:
-                voice = listener.record(source, 5)
-                command = listener.recognize_google(voice)
-                task = command.lower()
+            task = self.inp()
 
             if 'hello mini' in task:
                 self.run_mini()
@@ -140,11 +132,8 @@ class Mini:
     def run_mini(self):
         try:
             self.talk("Mini is Listening.. How Can I help You?")
-            with rec.Microphone() as source:
-                voice = listener.record(source, 5)
-                command = listener.recognize_google(voice)
-                task = command.lower()
-                task = task.replace('mini', " ")
+            task = self.inp()
+            task = task.replace('mini', " ")
 
             if 'intro' in task:
                 self.intro()
@@ -187,3 +176,4 @@ class Mini:
                 self.talk('Sorry Could not Understand')
         except:
             pass
+
