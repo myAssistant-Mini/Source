@@ -3,10 +3,11 @@
 # pip install SpeechRecognition
 # pip install pyttsx3
 # pip install PyAudio : Download the wheel file from src folder of the repository and then in command prompt give proper directory and then give command: pip install PyAudio-0.2.11-cp39-cp39-win_amd64.whl
-# IMPORTANT pip install tkvideo
+# pip install tkvideo
 
+#added browse command
 
-import cv2  # pip install opencv-python
+import cv2
 import requests
 import speech_recognition as rec
 import pyttsx3
@@ -14,6 +15,7 @@ import pywhatkit
 import datetime
 import wikipedia
 from founders import bhavesh, atharva, yogesh
+import webbrowser
 
 
 listener = rec.Recognizer()
@@ -32,9 +34,9 @@ class Mini:
         engine.say(text)
         engine.runAndWait()
 
-    def hearYou(self):
+    def hearYou(self, time=3):
         with rec.Microphone() as source:
-            voice = listener.record(source, 3)
+            voice = listener.record(source, time)
             command = listener.recognize_google(voice)
             low = command.lower()
             return low
@@ -45,7 +47,7 @@ class Mini:
         friend = self.hearYou()
 
         self.talk("What is the message")
-        message = self.hearYou()
+        message = self.hearYou(10)
 
         hour = datetime.datetime.now().strftime('%H')
         minute = datetime.datetime.now().strftime('%M')
@@ -138,7 +140,7 @@ class Mini:
 
         if cap.isOpened():
             _, frame = cap.read()
-            cv2.imshow('s', frame)
+            # cv2.imshow('s', frame)
             cap.release()
             if _ and frame is not None:
                 cv2.imwrite('selfie.png', frame)
@@ -159,11 +161,11 @@ class Mini:
     def makeAToDoList(self):
         self.talk("Please Say your Name")
         name = self.hearYou()
-        print(f"Name : {name}")
+        # print(f"Name : {name}")
 
         self.talk(
             f"So {name} what do you want to note\n\nPlease say I will Note it for you")
-        notes = self.hearYou()
+        notes = self.hearYou(10)
 
         with open("notes.txt", "w") as note:
             for tasks in notes:
@@ -175,7 +177,7 @@ class Mini:
         self.talk("Please Say your Name")
         name = self.hearYou()
 
-        print(name)
+        # print(name)
         self.talk(f"So {name} here\'s you to do list")
 
         with open("notes.txt", "r") as notes:
@@ -184,12 +186,13 @@ class Mini:
     def mini(self):
         try:
             task = self.hearYou()
-            print(task)
 
             if 'hello mini' in task:
+                print('...')
                 self.run_mini()
 
             elif 'stop' in task:
+                print('...')
                 self.talk('Thank You. Have a nice day.')
                 return 'stop'
             else:
@@ -211,7 +214,7 @@ class Mini:
                 self.talk(f"playing {song}")
                 pywhatkit.playonyt(song)
 
-            elif 'get' or 'contact' in task:
+            elif 'contact' in task:
                 self.getAContactNumber()
 
             elif 'time' in task:
@@ -226,10 +229,10 @@ class Mini:
                 person = task.replace('who is', "")
                 self.tellInformationAboutAnything(person)
 
-            elif 'take' or 'selfie' in task:
+            elif 'selfie' in task:
                 self.takeASelfie()
 
-            elif 'tell' in task:
+            elif 'read' in task:
                 self.readMyNotes()
 
             elif 'note' in task:
@@ -263,6 +266,10 @@ class Mini:
 
             elif 'send a message' in task:
                 self.makeWhatsappMessage()
+
+            elif 'browse ' in task:
+                task = task.replace("browse ", "")
+                webbrowser.open(f"www.{task}.com")
 
             else:
                 self.talk('Sorry Could not Understand')
