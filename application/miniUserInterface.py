@@ -1,12 +1,19 @@
 # This is the main file . Execution starts here. Run this file in IDE
 
 #DOWNLOAD IMAGES AND GUI.MP4 FROM SRC
-from tkinter import *
 
+import pygame
+from pygame import mixer
+
+from tkinter import *
 import tkinter as tk
 from tkvideo import tkvideo
 
 from mini import open_mini,open_search
+
+pygame.init()
+mixer.music.load('song.mp3')
+mixer.music.play(-1)
 
 root = Tk()
 root.title('MINI Search Engine')
