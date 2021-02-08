@@ -13,7 +13,7 @@ from mini import open_mini,open_search
 
 pygame.init()
 mixer.music.load('song.mp3')
-mixer.music.play(-1)
+mixer.music.play(0)
 
 root = Tk()
 root.title('MINI Search Engine')
