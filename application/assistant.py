@@ -6,7 +6,8 @@
 # pip install PyAudio : Download the wheel file from src folder of the repository and then in command prompt give proper directory and then give command: pip install PyAudio-0.2.11-cp39-cp39-win_amd64.whl
 # pip install tkvideo
 
-#added browse command
+#added email, google meet
+
 
 import cv2
 import requests
@@ -17,6 +18,10 @@ import datetime
 import wikipedia
 from founders import bhavesh, atharva, yogesh
 import webbrowser
+import pyautogui
+import time
+import smtplib
+from email.message import EmailMessage
 
 
 listener = rec.Recognizer()
@@ -184,6 +189,61 @@ class Mini:
         with open("notes.txt", "r") as notes:
             self.talk(notes.read())
 
+    def inviteForAGoogleMeet(self):
+        url = 'meet.google.com'
+        webbrowser.open(url)
+        time.sleep(8)
+        pyautogui.press('enter')
+        time.sleep(2)
+        pyautogui.press('down')
+        time.sleep(2)
+        pyautogui.press('enter')
+        time.sleep(10)
+        pyautogui.click(190, 250)
+        time.sleep(2)
+        pyautogui.click(810, 450)
+        time.sleep(1)
+        pyautogui.write(
+            'atharva.r.bhagat@gmail.com, atharvabhagat218@gmail.com, 31bhavesh.mhadse2001@gmail.com')
+        pyautogui.press('enter')
+        time.sleep(2)
+        pyautogui.click(1170, 800)
+
+    def sendAnEmail(self):
+        self.talk("Whom to Send")
+        friend = self.hearYou()
+        # print(friend)
+
+        self.talk("What is the subject")
+        subject = self.hearYou(5)
+
+        self.talk("What is the message")
+        message = self.hearYou(5)
+
+        emails = {"atharva": 'atharva.r.bhagat@gmail.com',
+                  "bhavesh": 'bhaveshmhadse9@gmail.com',
+                  "yogesh": 'yogeshvghate@gmail.com',
+                  "creators": 'atharva.r.bhagat@gmail.com, bhaveshmhadse9@gmail.com, yogeshvghate@gmail.com' }
+        
+        receiver = emails[friend]
+        print(receiver)
+        self.talk(f'Successfully sent your email to {receiver}')
+        
+        self.send(subject,receiver,message)
+
+            
+    def send(self,subject,friend,message):
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login('intelligent.mini.search@gmail.com', 'Ramnathi@23')
+        email = EmailMessage()
+        email['From'] = 'intelligent.mini.search@gmail.com'
+        email['To'] = friend
+        email['Subject'] = subject
+        email.set_content(message)
+        server.send_message(email)
+
+
     def mini(self):
         try:
             task = self.hearYou()
@@ -196,6 +256,7 @@ class Mini:
                 print('...')
                 self.talk('Thank You. Have a nice day.')
                 return 'stop'
+
             else:
                 self.mini()
         except:
@@ -204,7 +265,9 @@ class Mini:
     def run_mini(self):
         try:
             self.talk("Mini is Listening.. How Can I help You?")
+
             task = self.hearYou()
+            # print(task)
             task = task.replace('mini', "")
 
             if 'intro' in task:
@@ -268,9 +331,17 @@ class Mini:
             elif 'send a message' in task:
                 self.makeWhatsappMessage()
 
-            elif 'browse ' in task:
+            elif 'browse' in task:
                 task = task.replace("browse ", "")
                 webbrowser.open(f"www.{task}.com")
+
+            elif 'invite' in task:
+                self.talk(
+                    'Creating a meeting and inviting your friends in a minute')
+                self.inviteForAGoogleMeet()
+
+            elif 'email' or 'mail' in task:
+                self.sendAnEmail()
 
             else:
                 self.talk('Sorry Could not Understand')
