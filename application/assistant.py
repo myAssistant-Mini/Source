@@ -1,4 +1,5 @@
 
+# pip install pygame       
 # pip install pywhatkit
 # pip install SpeechRecognition
 # pip install pyttsx3
