@@ -6,7 +6,10 @@
 # pip install PyAudio : Download the wheel file from src folder of the repository and then in command prompt give proper directory and then give command: pip install PyAudio-0.2.11-cp39-cp39-win_amd64.whl
 # pip install tkvideo
 
-#added email, google meet
+
+# pip install win10toast
+# added notifications for at start. is listening, contact, wikipedia,time , whatsapp, email
+
 
 
 import cv2
@@ -22,6 +25,9 @@ import pyautogui
 import time
 import smtplib
 from email.message import EmailMessage
+from win10toast import ToastNotifier
+
+notify = ToastNotifier()
 
 
 listener = rec.Recognizer()
@@ -45,7 +51,7 @@ class Mini:
             voice = listener.record(source, time)
             command = listener.recognize_google(voice)
             low = command.lower()
-            return low
+        return low
 
     def makeWhatsappMessage(self):
 
@@ -59,6 +65,8 @@ class Mini:
         minute = datetime.datetime.now().strftime('%M')
 
         self.talk(f"Sending message to {friend}")
+        notify.show_toast("MINI - Intelligent Search Engine",
+                          "Message will be sent in a minute", 'icon.ico', 20, True)
 
         mobile = {'bhavesh': '+919136298868',
                   'atharva': '+918097985835',  'yogesh': '+918329863550'}
@@ -70,6 +78,7 @@ class Mini:
         try:
             pywhatkit.sendwhatmsg(mobile[friend], message, int(
                 hour), int(minute) + 1, 10, True)
+
         except:
             pass
 
@@ -91,15 +100,15 @@ class Mini:
             pressure = main['pressure']
             report = data['weather']
 
-            print(f'City: {city}')
+            notify.show_toast(
+                "Weather Report", f'''City: {city.upper()}
+Temperature: {temperature} C | Report: {report[0]['description']}
+Pressure: {pressure} | Humidity: {humidity}''', 'icon.ico', 10, True) #/n doesn't work.. please don't change
+
             self.talk(f'Weather For City {city}')
-            print(f"Temperature: {temperature} C")
             self.talk(f"Temperature: {temperature} degree celsius")
-            print(f"Weather Report: {report[0]['description']}")
             self.talk(f"Weather Report: {report[0]['description']}")
-            print(f"Pressure: {pressure}")
             self.talk(f"Pressure: {pressure}")
-            print(f"Humidity: {humidity}")
             self.talk(f"Humidity: {humidity}")
 
         else:
@@ -107,14 +116,15 @@ class Mini:
 
     def tellInformationAboutAnything(self, person):
         answer = wikipedia.summary(person, 1)
-        print(answer)
+        notify.show_toast("miniSearch :" + person,
+                          answer, 'icon.ico', 15, True)
         self.talk(answer)
 
     def tellCreatorsInformation(self):
         try:
             self.talk("Which creator you want to explore")
             name = self.hearYou()
-            print(name)
+            # print(name)
 
             if 'bhavesh' in name:
                 info = bhavesh.get_info()
@@ -157,12 +167,11 @@ class Mini:
 
         cont = self.contactList.index(contactNumber)
 
-        self.talk(f"Contact Number of {contactNumber} is ")
-
         with open("contacts.txt", "r") as con:
             conts = con.readlines()
-
-            self.talk(conts[cont])  # Talks About contact number
+        notify.show_toast("MINI - Intelligent Search Engine",
+                          f"Contact Number of {contactNumber.upper()} is " + conts[cont], 'icon.ico', 8, True)
+        self.talk(f"Contact Number of {contactNumber} is " + conts[cont])
 
     def makeAToDoList(self):
         self.talk("Please Say your Name")
@@ -209,6 +218,55 @@ class Mini:
         time.sleep(2)
         pyautogui.click(1170, 800)
 
+    def scrollInstagram(self):
+        self.talk('Sure, Opening and logging you in few seconds.')
+        url = "https://www.instagram.com/accounts/login/"
+        webbrowser.open(url)
+        time.sleep(8)
+        pyautogui.click(880, 312)
+        pyautogui.write('mini.assistant')
+        pyautogui.click(880, 365)
+        pyautogui.write('Ramnathi@23')
+        pyautogui.press('enter')
+        time.sleep(8)
+
+        self.scroll()
+
+        self.talk('What else you wish to do')
+        task = self.hearYou()
+        if 'music' or 'search' in task:
+            time.sleep(3)
+            pyautogui.click(980, 120)
+            pyautogui.write('musicbay_dmce')
+            time.sleep(2)
+            pyautogui.press('enter')
+            pyautogui.press('enter')
+            time.sleep(8)
+
+        self.talk('What else you wish to do')
+        task = self.hearYou()
+        if 'show' in task:
+            pyautogui.click(430, 120)
+            time.sleep(3)
+            pyautogui.click(1210, 250)
+            time.sleep(3)
+            self.talk('What a wonderful profile')
+
+    def scroll(self):
+        for i in range(10):
+            pyautogui.press('down')
+        self.talk('Do you want to like this post')
+        like = self.hearYou()
+        if 'yes' in like:
+            pyautogui.doubleClick(720, 380)
+            time.sleep(3)
+            self.talk('Do you want to keep scrolling')
+            like = self.hearYou()
+            if 'yes' in like:
+                self.scroll()
+            else:
+                return
+
     def sendAnEmail(self):
         self.talk("Whom to Send")
         friend = self.hearYou()
@@ -223,16 +281,16 @@ class Mini:
         emails = {"atharva": 'atharva.r.bhagat@gmail.com',
                   "bhavesh": 'bhaveshmhadse9@gmail.com',
                   "yogesh": 'yogeshvghate@gmail.com',
-                  "creators": 'atharva.r.bhagat@gmail.com, bhaveshmhadse9@gmail.com, yogeshvghate@gmail.com' }
-        
-        receiver = emails[friend]
-        print(receiver)
-        self.talk(f'Successfully sent your email to {receiver}')
-        
-        self.send(subject,receiver,message)
+                  "creators": 'atharva.r.bhagat@gmail.com, bhaveshmhadse9@gmail.com, yogeshvghate@gmail.com'}
 
-            
-    def send(self,subject,friend,message):
+        receiver = emails[friend]
+        notify.show_toast("MINI - Intelligent Search Engine",
+                          "Successfully Sent Email to :" + receiver, 'icon.ico', 5, True)
+        self.talk(f'Successfully sent your email to {receiver}')
+
+        self.send(subject, receiver, message)
+
+    def send(self, subject, friend, message):
         server = smtplib.SMTP('smtp.gmail.com', 587)
         server.starttls()
         server.login('intelligent.mini.search@gmail.com', 'Ramnathi@23')
@@ -242,7 +300,6 @@ class Mini:
         email['Subject'] = subject
         email.set_content(message)
         server.send_message(email)
-
 
     def mini(self):
         try:
@@ -264,6 +321,8 @@ class Mini:
 
     def run_mini(self):
         try:
+            notify.show_toast("MINI - Intelligent Search Engine",
+                              "Mini is Listening...", 'icon.ico', 6, True)
             self.talk("Mini is Listening.. How Can I help You?")
 
             task = self.hearYou()
@@ -283,6 +342,8 @@ class Mini:
 
             elif 'time' in task:
                 time = datetime.datetime.now().strftime('%I: %M %p')
+                notify.show_toast("MINI - Intelligent Search Engine",
+                                  "Current time is " + time, 'icon.ico', 6, True)
                 self.talk("Current time is " + time)
 
             elif 'date' in task:
@@ -340,8 +401,14 @@ class Mini:
                     'Creating a meeting and inviting your friends in a minute')
                 self.inviteForAGoogleMeet()
 
-            elif 'email' or 'mail' in task:
+            elif 'instagram' in task:
+                self.scrollInstagram()
+
+            elif 'email' in task:
                 self.sendAnEmail()
+
+            elif 'engine' in task:
+                webbrowser.open('http://127.0.0.1:8000/')
 
             else:
                 self.talk('Sorry Could not Understand')
