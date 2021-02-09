@@ -1,33 +1,30 @@
-# This is the main file . Execution starts here. Run this file in IDE
-
-#DOWNLOAD IMAGES AND GUI.MP4 FROM SRC
-
 import pygame
 from pygame import mixer
-
+from win10toast import ToastNotifier
 from tkinter import *
 import tkinter as tk
 from tkvideo import tkvideo
+from mini import open_mini
 
-from mini import open_mini,open_search
+notify = ToastNotifier()
+notify.show_toast("MINI - Intelligent Search Engine",
+                  "Mini has Started", 'icon.ico', 5, True)
 
-pygame.init()
-mixer.music.load('song.mp3')
-mixer.music.play(0)
+#NO NEED OF PATHS. PUT IN THE FOLDER ITSELF 
 
 root = Tk()
 root.title('MINI Search Engine')
 p1 = PhotoImage(file='favicon.png')
+btn = PhotoImage(file='btn.png', height=33, width=399)
 root.iconphoto(False, p1)
 my_label = Label(root)
 my_label.pack()
-player = tkvideo("C:\\Users\\acer\\PythonProjects\\myAssistant-Mini\\gui.mp4",
-                 my_label, loop=1, size=(400, 700))
-# player = tkvideo("C:\\Users\\admin\\Desktop\\Vs Code Python\\gui.mp4", my_label, loop=1, size=(300, 500)) # Bhavesh's 
-start = tk.Button(root, text="myAssistant", command=open_mini)
-start.pack(side=LEFT)
-search = tk.Button(root, text="mySearch", command=open_search)
-search.pack(side=RIGHT)
-player.play()
 
+player = tkvideo("gui.mp4", my_label, loop=1, size=(399, 700))                 
+start = tk.Button(root, image=btn, height=33, width=399, command=open_mini)
+start.pack()
+player.play()
+pygame.init()
+mixer.music.load('song.mp3')
+mixer.music.play(0)
 root.mainloop()
