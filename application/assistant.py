@@ -7,7 +7,8 @@
 # pip install tkvideo
 # pip install win10toast
 
-# added funzone 
+# pip install PyPDF2 
+# added funzone , audiobook
 
 
 import cv2
