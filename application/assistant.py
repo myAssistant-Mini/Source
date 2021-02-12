@@ -5,11 +5,9 @@
 # pip install pyttsx3
 # pip install PyAudio : Download the wheel file from src folder of the repository and then in command prompt give proper directory and then give command: pip install PyAudio-0.2.11-cp39-cp39-win_amd64.whl
 # pip install tkvideo
-
-
 # pip install win10toast
-# added notifications for at start. is listening, contact, wikipedia,time , whatsapp, email
 
+# added funzone 
 
 
 import cv2
@@ -26,14 +24,14 @@ import time
 import smtplib
 from email.message import EmailMessage
 from win10toast import ToastNotifier
+import PyPDF2
 
 notify = ToastNotifier()
-
-
 listener = rec.Recognizer()
 engine = pyttsx3.init()
 voices = engine.getProperty('voices')
 engine.setProperty('voice', voices[1].id)
+
 
 
 class Mini:
@@ -103,7 +101,7 @@ class Mini:
             notify.show_toast(
                 "Weather Report", f'''City: {city.upper()}
 Temperature: {temperature} C | Report: {report[0]['description']}
-Pressure: {pressure} | Humidity: {humidity}''', 'icon.ico', 10, True) #/n doesn't work.. please don't change
+Pressure: {pressure} | Humidity: {humidity}''', 'icon.ico', 10, True)
 
             self.talk(f'Weather For City {city}')
             self.talk(f"Temperature: {temperature} degree celsius")
@@ -116,7 +114,7 @@ Pressure: {pressure} | Humidity: {humidity}''', 'icon.ico', 10, True) #/n doesn'
 
     def tellInformationAboutAnything(self, person):
         answer = wikipedia.summary(person, 1)
-        notify.show_toast("miniSearch :" + person,
+        notify.show_toast("MiniSearch :" + person.upper,
                           answer, 'icon.ico', 15, True)
         self.talk(answer)
 
@@ -301,6 +299,34 @@ Pressure: {pressure} | Humidity: {humidity}''', 'icon.ico', 10, True) #/n doesn'
         email.set_content(message)
         server.send_message(email)
 
+    def readNews(self):
+        url = "http://newsapi.org/v2/top-headlines?sources=google-news-in&apiKey=1d500e94abb640a8be6d8330be36754b"
+        news = requests.get(url).json()
+        articles = news["articles"]
+
+        result = []
+
+        for a in articles:
+            result.append(a["title"])
+
+        for i in range(5):
+            time.sleep(3)
+            Headline = result[i]
+            notify.show_toast("MINI - Trending News",
+                              Headline, 'icon.ico', 5, True)
+            self.talk(Headline)
+        self.talk('These were the top headlines powered by Mini Search Engine') 
+
+    def readANovel(self):
+        book = open('novel.pdf','rb')
+        read = PyPDF2.PdfFileReader(book)
+        pages = read.numPages
+        for num in range(4,pages):
+            page= read.getPage(num)
+            text = page.extractText()
+            self.talk(text)
+
+
     def mini(self):
         try:
             task = self.hearYou()
@@ -348,6 +374,8 @@ Pressure: {pressure} | Humidity: {humidity}''', 'icon.ico', 10, True) #/n doesn'
 
             elif 'date' in task:
                 date = datetime.date.today()
+                notify.show_toast("MINI - Intelligent Search Engine",
+                              "Today's date: " + date, 'icon.ico', 6, True)
                 self.talk(f"Today's Date is {date}")
 
             elif 'who' in task:
@@ -356,6 +384,12 @@ Pressure: {pressure} | Humidity: {humidity}''', 'icon.ico', 10, True) #/n doesn'
 
             elif 'selfie' in task:
                 self.takeASelfie()
+
+            elif 'novel' in task:
+                notify.show_toast("myAssistant MINI",
+                              "Currently Reading: Murder on the Orient Express - Agatha Christie", 'icon.ico', 35, True)
+                self.talk('Reading your favorite novel - Murder on the Orient Express')
+                self.readANovel()
 
             elif 'read' in task:
                 self.readMyNotes()
@@ -389,7 +423,7 @@ Pressure: {pressure} | Humidity: {humidity}''', 'icon.ico', 10, True) #/n doesn'
             elif 'creator' in task:
                 self.tellCreatorsInformation()
 
-            elif 'send a message' in task:
+            elif 'message' in task:
                 self.makeWhatsappMessage()
 
             elif 'browse' in task:
@@ -397,6 +431,8 @@ Pressure: {pressure} | Humidity: {humidity}''', 'icon.ico', 10, True) #/n doesn'
                 webbrowser.open(f"www.{task}.com")
 
             elif 'invite' in task:
+                notify.show_toast("MINI - Intelligent Search Engine",
+                              "Creating Google Meet Link and sending Invitation", 'icon.ico', 8, True)
                 self.talk(
                     'Creating a meeting and inviting your friends in a minute')
                 self.inviteForAGoogleMeet()
@@ -408,9 +444,112 @@ Pressure: {pressure} | Humidity: {humidity}''', 'icon.ico', 10, True) #/n doesn'
                 self.sendAnEmail()
 
             elif 'engine' in task:
+                notify.show_toast("MINI - Intelligent Search Engine",
+                              "Launching Search Engine", 'icon.ico', 6, True)
                 webbrowser.open('http://127.0.0.1:8000/')
+
+            elif 'news' in task:
+                self.readNews()
+
+            elif 'fun' in task:
+                play = FunZone()
+                notify.show_toast("MINI Intelligent Search Engine",
+                              "Mini Fun Zone has started...", 'icon.ico', 6, True)
+                self.talk("You have Entered MINI Fun Zone")
+                while True:
+                    run = play.fun()
+                    if run == 'stop':
+                        break
 
             else:
                 self.talk('Sorry Could not Understand')
+        except:
+            pass
+
+
+fun = Mini()
+
+class FunZone:
+    def search(self):
+        fun.talk('Such a stupid question. You should have known about this. Go increase your general knowledge')
+
+    def playASong(self):
+        fun.talk('I am bored right now. Go Hang out with your friends')
+
+    def whatTime(self):
+        fun.talk('See your watch. Dont disturb me for small things.')
+
+    def creator(self):
+        fun.talk('Some stupid teenagers like you')
+
+    def boyfriend(self):
+        fun.talk('Its none of your business. But yes, I am not single like you are')
+
+    def letsPlay(self):
+        fun.talk('I dont have time to play with humans.Get a life.')
+
+    def joke(self):
+        fun.talk('Open your selfie cam or go stand in front of a mirror. You will see the funniest joke in this world.')
+
+    def memory(self):
+        fun.talk('Do you remember? One day you proposed your crush and you got friendzoned. I laughed so much that day. lol')
+
+    def fun(self):
+        
+        try:
+            task = fun.hearYou()
+
+            if 'hello mini' in task:
+                print('...')
+                self.runFunZone()
+
+            elif 'exit' in task:
+                print('...')
+                notify.show_toast("MINI FunZone Exited",
+                              "Entering into Mini Intelligent Search", 'icon.ico', 4, True)
+                fun.talk('Exiting Fun Zone.')
+                return 'stop'
+
+            else:
+                self.fun()
+        except:
+            pass
+
+    def runFunZone(self):
+        try:
+            notify.show_toast("MINI FunZone",
+                              "Mini is Waiting...", 'icon.ico', 6, True)
+            fun.talk("I am waiting.. say fast")
+
+            task = fun.hearYou()
+            print(task)
+            task = task.replace('mini', "")
+
+            if 'time' in task:
+                self.whatTime()
+
+            elif 'joke' in task:
+                self.joke()
+
+            elif 'song' in task:
+                self.playASong()
+
+            elif 'created' in task:
+                self.creator()
+
+            elif 'play' in task:
+                self.letsPlay()
+
+            elif 'single' in task:
+                self.boyfriend()
+
+            elif 'memory' in task:
+                self.memory()            
+
+            elif 'who' in task:
+                self.search()
+
+            else:
+                fun.talk('I am busy. Go do it yourself')
         except:
             pass
