@@ -34,12 +34,20 @@ voices = engine.getProperty('voices')
 engine.setProperty('voice', voices[1].id)
 
 
-
 class Mini:
-
     def __init__(self):
         self.contactList = ["bhavesh", "atharva", "yogesh",
                             "vaishu", "adika", "siddhi"]
+
+        self.taskDictionary = {'intro': self.introduceSelf, 'contact': self.getAContactNumber, 'time': self.tellTime,
+                               'date': self.tellDate, 'selfie': self.takeASelfie, 'novel': self.readANovel,
+                               'read': self.readMyNotes, 'note': self.makeAToDoList, 'do': self.tasksMiniCanPerform,
+                               'weather': self.getWeatherInformation, 'instagram': self.scrollInstagram, 'email': self.sendAnEmail,
+                               'creator': self.tellCreatorsInformation, 'message': self.makeWhatsappMessage, 'news': self.readNews,
+                               'invite': self.inviteForAGoogleMeet, 'engine': self.launchMiniSearchEngine, 'fun': self.startFunZone}
+
+        self.taskArray = ['intro', 'contact', 'time', 'date', 'selfie', 'novel', 'read', 'note', 'do', 'weather',
+                          'instagram', 'email', 'creator', 'message', 'news', 'invite', 'play', 'browse', 'who', 'what', 'where']
 
     def talk(self, text: str):
         engine.say(text)
@@ -81,6 +89,17 @@ class Mini:
         except:
             pass
 
+    def summarizeWikipedia(self, task,command):
+        task = task.replace(f'{command} is', "")
+        person = task.replace('are',"")
+        try:
+            answer = wikipedia.summary(person, 1)
+            notify.show_toast( f"MiniSearch :{person.upper()}",answer, 'icon.ico', 15, True)
+            self.talk(answer)
+        except:
+            self.talk('Sorry Could not understand')
+        
+
     def getWeatherInformation(self):
         BASE_URL = "http://api.openweathermap.org/data/2.5/weather?"
 
@@ -113,12 +132,6 @@ Pressure: {pressure} | Humidity: {humidity}''', 'icon.ico', 10, True)
         else:
             print("Sorry Could Not Understand")
 
-    def tellInformationAboutAnything(self, person):
-        answer = wikipedia.summary(person, 1)
-        notify.show_toast("MiniSearch :" + person.upper,
-                          answer, 'icon.ico', 15, True)
-        self.talk(answer)
-
     def tellCreatorsInformation(self):
         try:
             self.talk("Which creator you want to explore")
@@ -144,7 +157,7 @@ Pressure: {pressure} | Humidity: {humidity}''', 'icon.ico', 10, True)
             pass
 
     def introduceSelf(self):
-        self.talk("Hello everyone, I am Mini, a intelligent Search Engine and a super useful voice Assistant."
+        self.talk("Hello everyone, I am Mini, a intelligent Search Engine and a super useful voice Assistant. "
                   "I try my best to automate all tasks and help you in your work")
 
     def takeASelfie(self):
@@ -192,12 +205,15 @@ Pressure: {pressure} | Humidity: {humidity}''', 'icon.ico', 10, True)
         name = self.hearYou()
 
         # print(name)
-        self.talk(f"So {name} here\'s you to do list")
+        self.talk(f"So {name} here's you to do list")
 
         with open("notes.txt", "r") as notes:
             self.talk(notes.read())
 
     def inviteForAGoogleMeet(self):
+        notify.show_toast("MINI - Intelligent Search Engine",
+                                  "Creating Google Meet Link and sending Invitation", 'icon.ico', 8, True)
+        self.talk('Creating a meeting and inviting your friends in a minute')
         url = 'meet.google.com'
         webbrowser.open(url)
         time.sleep(8)
@@ -251,21 +267,6 @@ Pressure: {pressure} | Humidity: {humidity}''', 'icon.ico', 10, True)
             time.sleep(3)
             self.talk('What a wonderful profile')
 
-    def scroll(self):
-        for i in range(10):
-            pyautogui.press('down')
-        self.talk('Do you want to like this post')
-        like = self.hearYou()
-        if 'yes' in like:
-            pyautogui.doubleClick(720, 380)
-            time.sleep(3)
-            self.talk('Do you want to keep scrolling')
-            like = self.hearYou()
-            if 'yes' in like:
-                self.scroll()
-            else:
-                return
-
     def sendAnEmail(self):
         self.talk("Whom to Send")
         friend = self.hearYou()
@@ -289,17 +290,6 @@ Pressure: {pressure} | Humidity: {humidity}''', 'icon.ico', 10, True)
 
         self.send(subject, receiver, message)
 
-    def send(self, subject, friend, message):
-        server = smtplib.SMTP('smtp.gmail.com', 587)
-        server.starttls()
-        server.login('intelligent.mini.search@gmail.com', 'Ramnathi@23')
-        email = EmailMessage()
-        email['From'] = 'intelligent.mini.search@gmail.com'
-        email['To'] = friend
-        email['Subject'] = subject
-        email.set_content(message)
-        server.send_message(email)
-
     def readNews(self):
         url = "http://newsapi.org/v2/top-headlines?sources=google-news-in&apiKey=1d500e94abb640a8be6d8330be36754b"
         news = requests.get(url).json()
@@ -311,22 +301,106 @@ Pressure: {pressure} | Humidity: {humidity}''', 'icon.ico', 10, True)
             result.append(a["title"])
 
         for i in range(5):
-            time.sleep(3)
+            time.sleep(1)
             Headline = result[i]
             notify.show_toast("MINI - Trending News",
                               Headline, 'icon.ico', 5, True)
             self.talk(Headline)
-        self.talk('These were the top headlines powered by Mini Search Engine') 
+        self.talk('These were the top headlines powered by Mini Search Engine')
 
     def readANovel(self):
-        book = open('novel.pdf','rb')
+        notify.show_toast("myAssistant MINI",
+                          "Currently Reading: Murder on the Orient Express - Agatha Christie", 'icon.ico', 35, True)
+        self.talk('Reading your favorite novel - Murder on the Orient Express')
+        book = open('novel.pdf', 'rb')
         read = PyPDF2.PdfFileReader(book)
         pages = read.numPages
-        for num in range(4,pages):
-            page= read.getPage(num)
+        for num in range(4, pages):
+            page = read.getPage(num)
             text = page.extractText()
             self.talk(text)
 
+    def tellTime(self):
+        time = datetime.datetime.now().strftime('%I: %M %p')
+        notify.show_toast("MINI - Intelligent Search Engine",
+                          "Current time is " + time, 'icon.ico', 6, True)
+        self.talk("Current time is " + time)
+
+    def tellDate(self):
+        date = datetime.date.today()
+        notify.show_toast("MINI - Intelligent Search Engine",
+                          "Today's date: ", date, 'icon.ico', 6, True)
+        self.talk(f"Today's Date is {date}")
+
+    
+    def playYouTubeVideos(self,task):
+        song = task.replace('play', "")
+        self.talk(f"playing {song}")
+        pywhatkit.playonyt(song)
+
+   
+
+    def launchMiniSearchEngine(self):
+        notify.show_toast("MINI - Intelligent Search Engine",
+                                  "Launching Search Engine", 'icon.ico', 6, True)
+        webbrowser.open('http://127.0.0.1:8000/')
+
+    def startFunZone(self):
+        play = FunZone()
+        notify.show_toast("MINI Intelligent Search Engine",
+                            "Mini Fun Zone has started...", 'icon.ico', 6, True)
+        self.talk("You have Entered MINI Fun Zone")
+        while True:
+            run = play.fun()
+            if run == 'stop':
+                break
+
+    def send(self, subject, friend, message):
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login('intelligent.mini.search@gmail.com', 'Ramnathi@23')
+        email = EmailMessage()
+        email['From'] = 'intelligent.mini.search@gmail.com'
+        email['To'] = friend
+        email['Subject'] = subject
+        email.set_content(message)
+        server.send_message(email)
+
+    def scroll(self):
+        for i in range(10):
+            pyautogui.press('down')
+        self.talk('Do you want to like this post')
+        like = self.hearYou()
+        if 'yes' in like:
+            pyautogui.doubleClick(720, 380)
+            time.sleep(3)
+            self.talk('Do you want to keep scrolling')
+            like = self.hearYou()
+            if 'yes' in like:
+                self.scroll()
+            else:
+                return
+
+    def browseOnWeb(self, task, command):
+        if command == 'play':
+            song = task.replace('play', "")
+            self.talk(f"playing {song}")
+            pywhatkit.playonyt(song)
+            return 0
+        task = task.replace("browse ", "")
+        webbrowser.open(f"www.{task}.com")
+            
+    def tasksMiniCanPerform(self):
+        littlemini = Mini()
+        tasks = littlemini.__dir__()
+        i = 0
+        for allthetasks in tasks:
+            if i == 21:
+                break
+            if allthetasks.startswith('__') or allthetasks =='contactList' or allthetasks=='taskArray' or allthetasks=='taskDictionary':
+                continue
+            self.talk(f"I can {allthetasks}")
+            i += 1
 
     def mini(self):
         try:
@@ -345,7 +419,7 @@ Pressure: {pressure} | Humidity: {humidity}''', 'icon.ico', 10, True)
                 self.mini()
         except:
             pass
-
+    
     def run_mini(self):
         try:
             notify.show_toast("MINI - Intelligent Search Engine",
@@ -353,150 +427,34 @@ Pressure: {pressure} | Humidity: {humidity}''', 'icon.ico', 10, True)
             self.talk("Mini is Listening.. How Can I help You?")
 
             task = self.hearYou()
-            # print(task)
+
             task = task.replace('mini', "")
+            print(task)
 
-            if 'intro' in task:
-                self.introduceSelf()
+            for variousTasks in self.taskArray:
+                if variousTasks in task:  
+                    if variousTasks =='who' or variousTasks=='where' or variousTasks=='what':
+                        self.summarizeWikipedia(task,variousTasks)
+                        return 0
 
-            elif 'play' in task:
-                song = task.replace('play', "")
-                self.talk(f"playing {song}")
-                pywhatkit.playonyt(song)
+                    if variousTasks == 'play' or variousTasks == 'browse':
+                        self.browseOnWeb(task, variousTasks)
+                        return 0             
 
-            elif 'contact' in task:
-                self.getAContactNumber()
+                    self.taskDictionary[variousTasks]()
+                    return 0
 
-            elif 'time' in task:
-                time = datetime.datetime.now().strftime('%I: %M %p')
-                notify.show_toast("MINI - Intelligent Search Engine",
-                                  "Current time is " + time, 'icon.ico', 6, True)
-                self.talk("Current time is " + time)
-
-            elif 'date' in task:
-                date = datetime.date.today()
-                notify.show_toast("MINI - Intelligent Search Engine",
-                              "Today's date: " + date, 'icon.ico', 6, True)
-                self.talk(f"Today's Date is {date}")
-
-            elif 'who' in task:
-                person = task.replace('who is', "")
-                self.tellInformationAboutAnything(person)
-
-            elif 'selfie' in task:
-                self.takeASelfie()
-
-            elif 'novel' in task:
-                notify.show_toast("myAssistant MINI",
-                              "Currently Reading: Murder on the Orient Express - Agatha Christie", 'icon.ico', 35, True)
-                self.talk('Reading your favorite novel - Murder on the Orient Express')
-                self.readANovel()
-
-            elif 'read' in task:
-                self.readMyNotes()
-
-            elif 'note' in task:
-                self.makeAToDoList()
-
-            elif 'do' in task:
-                littlemini = Mini()
-                tasks = littlemini.__dir__()
-                i = 0
-                for allthetasks in tasks:
-                    if i == 12:
-                        break
-                    if(allthetasks.startswith('__')):
-                        continue
-                    self.talk(f"I can {allthetasks}")
-                    i += 1
-
-            elif 'weather' in task:
-                self.getWeatherInformation()
-
-            elif 'what' in task:
-                person = task.replace('what is', "")
-                self.tellInformationAboutAnything(person)
-
-            elif 'where' in task:
-                person = task.replace('where is', "")
-                self.tellInformationAboutAnything(person)
-
-            elif 'creator' in task:
-                self.tellCreatorsInformation()
-
-            elif 'message' in task:
-                self.makeWhatsappMessage()
-
-            elif 'browse' in task:
-                task = task.replace("browse ", "")
-                webbrowser.open(f"www.{task}.com")
-
-            elif 'invite' in task:
-                notify.show_toast("MINI - Intelligent Search Engine",
-                              "Creating Google Meet Link and sending Invitation", 'icon.ico', 8, True)
-                self.talk(
-                    'Creating a meeting and inviting your friends in a minute')
-                self.inviteForAGoogleMeet()
-
-            elif 'instagram' in task:
-                self.scrollInstagram()
-
-            elif 'email' in task:
-                self.sendAnEmail()
-
-            elif 'engine' in task:
-                notify.show_toast("MINI - Intelligent Search Engine",
-                              "Launching Search Engine", 'icon.ico', 6, True)
-                webbrowser.open('http://127.0.0.1:8000/')
-
-            elif 'news' in task:
-                self.readNews()
-
-            elif 'fun' in task:
-                play = FunZone()
-                notify.show_toast("MINI Intelligent Search Engine",
-                              "Mini Fun Zone has started...", 'icon.ico', 6, True)
-                self.talk("You have Entered MINI Fun Zone")
-                while True:
-                    run = play.fun()
-                    if run == 'stop':
-                        break
-
-            else:
-                self.talk('Sorry Could not Understand')
+            self.talk("Sorry Could not understand")
         except:
             pass
-
+    
 
 fun = Mini()
+# fun.run_mini() use for fast debugging .. run assistant.py directly
 
-class FunZone:
-    def search(self):
-        fun.talk('Such a stupid question. You should have known about this. Go increase your general knowledge')
-
-    def playASong(self):
-        fun.talk('I am bored right now. Go Hang out with your friends')
-
-    def whatTime(self):
-        fun.talk('See your watch. Dont disturb me for small things.')
-
-    def creator(self):
-        fun.talk('Some stupid teenagers like you')
-
-    def boyfriend(self):
-        fun.talk('Its none of your business. But yes, I am not single like you are')
-
-    def letsPlay(self):
-        fun.talk('I dont have time to play with humans.Get a life.')
-
-    def joke(self):
-        fun.talk('Open your selfie cam or go stand in front of a mirror. You will see the funniest joke in this world.')
-
-    def memory(self):
-        fun.talk('Do you remember? One day you proposed your crush and you got friendzoned. I laughed so much that day. lol')
+class FunZone:       
 
     def fun(self):
-        
         try:
             task = fun.hearYou()
 
@@ -507,7 +465,7 @@ class FunZone:
             elif 'exit' in task:
                 print('...')
                 notify.show_toast("MINI FunZone Exited",
-                              "Entering into Mini Intelligent Search", 'icon.ico', 4, True)
+                                  "Entering into Mini Intelligent Search", 'icon.ico', 4, True)
                 fun.talk('Exiting Fun Zone.')
                 return 'stop'
 
@@ -527,30 +485,35 @@ class FunZone:
             task = task.replace('mini', "")
 
             if 'time' in task:
-                self.whatTime()
+                fun.talk('See your watch. Dont disturb me for small things.')
 
             elif 'joke' in task:
-                self.joke()
+                fun.talk(
+            'Open your selfie cam or go stand in front of a mirror. You will see the funniest joke in this world.')
 
             elif 'song' in task:
-                self.playASong()
-
+                fun.talk('I am bored right now. Go Hang out with your friends')
+               
             elif 'created' in task:
-                self.creator()
+                fun.talk('Some nerds like you')
 
             elif 'play' in task:
-                self.letsPlay()
+                fun.talk('I dont have time to play with humans.Get a life.')
 
             elif 'single' in task:
-                self.boyfriend()
+                fun.talk('Its none of your business. But yes, I am not single like you are')
 
             elif 'memory' in task:
-                self.memory()            
+                fun.talk(
+            'Do you remember? One day you proposed your crush and you got friendzoned. I laughed so much that day. lol')
 
             elif 'who' in task:
-                self.search()
+                fun.talk(
+            'Such a stupid question. You should have known about this. Go increase your general knowledge')
 
             else:
                 fun.talk('I am busy. Go do it yourself')
         except:
             pass
+
+ 
