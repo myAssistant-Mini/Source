@@ -1,7 +1,7 @@
 import pygame
 from pygame import mixer
 from win10toast import ToastNotifier
-from tkinter import *
+from tkinter import Tk,Label,PhotoImage
 import tkinter as tk
 from tkvideo import tkvideo
 from mini import open_mini
