@@ -16,9 +16,16 @@ class Person:
 atharva = Person('Atharva')
 bhavesh = Person('Bhavesh')
 yogesh = Person('Yogesh')
+rahul = Person('Rahul')
 
-atharva.set_info(' is student of Datta Meghe College of Engineering. Loves to play cricket and hang out with his friends. took great efforts to create me.')
-    
-bhavesh.set_info(' is student of Datta Meghe College of Engineering. Loves to play BasketBall and to read Books. also likes programming. took great efforts to create me.')
+atharva.set_info(
+    ' is student of Datta Meghe College of Engineering. Loves to play cricket and hang out with his friends. took great efforts to create me.')
 
-yogesh.set_info(' is student of Datta Meghe College of Engineering. Loves to play football. is good in extra curricular activities. took great efforts to create me.')
+bhavesh.set_info(
+    ' is student of Datta Meghe College of Engineering. Loves to play BasketBall and to read Books. also likes programming. took great efforts to create me.')
+
+yogesh.set_info(
+    ' is student of Datta Meghe College of Engineering. Loves to play football. is good in extra curricular activities. took great efforts to create me.')
+
+rahul.set_info(
+    ' is student of Datta Meghe College of Engineering. Loves to play cricket and hang out with his friends. took great efforts to create me.')
