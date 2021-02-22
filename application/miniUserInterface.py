@@ -1,10 +1,4 @@
-import pygame
-from pygame import mixer
-from win10toast import ToastNotifier
-from tkinter import Tk,Label,PhotoImage
-import tkinter as tk
-from tkvideo import tkvideo
-from mini import open_mini
+from modules import *
 
 notify = ToastNotifier()
 notify.show_toast("MINI - Intelligent Search Engine",
