@@ -1,10 +1,6 @@
-# Source
-Contains All the Bundles and Modules 
-
-src folder : All the data related to run our application
-
-
-
-
-
-application folder : The working modules and files to run application efficiently
+# The Intelligent Search Engine and Assistant Project
+### Datta Meghe College of Engineering - SE IT 
+![](src/readme.png)
+![](src/ppt1.png)
+![](src/ppt2.png)
+![](src/ppt3.png)
