@@ -20,7 +20,7 @@ engine.setProperty('voice', voices[1].id)
 class Mini:
     def __init__(self):
         self.contactList = ["bhavesh", "atharva", "yogesh",
-                            "vaishu", "adika", "siddhi"]
+                            "vaishu", "adika", "siddhi", "rahul"]
 
         self.taskDictionary = {'intro': self.introduceSelf, 'contact': self.getAContactNumber, 'time': self.tellTime,
                                'date': self.tellDate, 'selfie': self.takeASelfie, 'novel': self.readANovel,
@@ -58,8 +58,8 @@ class Mini:
         notify.show_toast("MINI - Intelligent Search Engine",
                           "Message will be sent in a minute", 'icon.ico', 20, True)
 
-        mobile = {'bhavesh': '+919136298868',
-                  'atharva': '+918097985835',  'yogesh': '+918329863550'}
+        mobile = {'bhavesh': '+919136298868', 'atharva': '+918097985835',
+                  'yogesh': '+918329863550', 'rahul': '+919930656344'}
 
         if mobile[friend] is None:
             self.talk('Sorry No Contact Found')
@@ -437,7 +437,7 @@ class Mini:
 
 
 fun = Mini()
-#  fun.run_mini()
+# fun.run_mini()
 #  use for fast debugging .. run assistant.py directly
 
 
