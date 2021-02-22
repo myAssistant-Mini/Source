@@ -437,7 +437,7 @@ class Mini:
 
 
 fun = Mini()
-fun.run_mini()
+#  fun.run_mini()
 #  use for fast debugging .. run assistant.py directly
 
 
