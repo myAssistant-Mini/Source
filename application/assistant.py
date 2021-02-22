@@ -6,26 +6,9 @@
 # pip install PyAudio : Download the wheel file from src folder of the repository and then in command prompt give proper directory and then give command: pip install PyAudio-0.2.11-cp39-cp39-win_amd64.whl
 # pip install tkvideo
 # pip install win10toast
-
 # pip install PyPDF2 
-# added funzone , audiobook
 
-
-import cv2
-import requests
-import speech_recognition as rec
-import pyttsx3
-import pywhatkit
-import datetime
-import wikipedia
-from founders import bhavesh, atharva, yogesh
-import webbrowser
-import pyautogui
-import time
-import smtplib
-from email.message import EmailMessage
-from win10toast import ToastNotifier
-import PyPDF2
+from modules import *
 
 notify = ToastNotifier()
 listener = rec.Recognizer()
@@ -46,8 +29,8 @@ class Mini:
                                'creator': self.tellCreatorsInformation, 'message': self.makeWhatsappMessage, 'news': self.readNews,
                                'invite': self.inviteForAGoogleMeet, 'engine': self.launchMiniSearchEngine, 'fun': self.startFunZone}
 
-        self.taskArray = ['intro', 'contact', 'time', 'date', 'selfie', 'novel', 'read', 'note', 'do', 'weather',
-                          'instagram', 'email', 'creator', 'message', 'news', 'invite', 'play', 'browse', 'who', 'what', 'where']
+        self.taskArray = ['stop', 'intro', 'contact', 'time', 'date', 'selfie', 'novel', 'read', 'note', 'do', 'weather',
+                          'instagram', 'email', 'engine', 'creator', 'message', 'news', 'invite', 'play', 'browse', 'who', 'what', 'where']
 
     def talk(self, text: str):
         engine.say(text)
@@ -89,16 +72,16 @@ class Mini:
         except:
             pass
 
-    def summarizeWikipedia(self, task,command):
+    def summarizeWikipedia(self, task, command):
         task = task.replace(f'{command} is', "")
-        person = task.replace('are',"")
+        person = task.replace('are', "")
         try:
             answer = wikipedia.summary(person, 1)
-            notify.show_toast( f"MiniSearch :{person.upper()}",answer, 'icon.ico', 15, True)
+            notify.show_toast(
+                f"MiniSearch :{person.upper()}", answer, 'icon.ico', 15, True)
             self.talk(answer)
         except:
             self.talk('Sorry Could not understand')
-        
 
     def getWeatherInformation(self):
         BASE_URL = "http://api.openweathermap.org/data/2.5/weather?"
@@ -120,8 +103,8 @@ class Mini:
 
             notify.show_toast(
                 "Weather Report", f'''City: {city.upper()}
-Temperature: {temperature} C | Report: {report[0]['description']}
-Pressure: {pressure} | Humidity: {humidity}''', 'icon.ico', 10, True)
+            Temperature: {temperature} C | Report: {report[0]['description']}
+            Pressure: {pressure} | Humidity: {humidity}''', 'icon.ico', 10, True)
 
             self.talk(f'Weather For City {city}')
             self.talk(f"Temperature: {temperature} degree celsius")
@@ -212,7 +195,7 @@ Pressure: {pressure} | Humidity: {humidity}''', 'icon.ico', 10, True)
 
     def inviteForAGoogleMeet(self):
         notify.show_toast("MINI - Intelligent Search Engine",
-                                  "Creating Google Meet Link and sending Invitation", 'icon.ico', 8, True)
+                          "Creating Google Meet Link and sending Invitation", 'icon.ico', 8, True)
         self.talk('Creating a meeting and inviting your friends in a minute')
         url = 'meet.google.com'
         webbrowser.open(url)
@@ -232,6 +215,13 @@ Pressure: {pressure} | Humidity: {humidity}''', 'icon.ico', 10, True)
         pyautogui.press('enter')
         time.sleep(2)
         pyautogui.click(1170, 800)
+        self.talk(
+            'Invitation sent to your colleagues. Do you want to keep your mic and camera on?')
+        vid = self.hearYou()
+        if vid == 'no':
+            pyautogui.click(1045, 975)
+            time.sleep(2)
+            pyautogui.click(870, 975)
 
     def scrollInstagram(self):
         self.talk('Sure, Opening and logging you in few seconds.')
@@ -332,23 +322,20 @@ Pressure: {pressure} | Humidity: {humidity}''', 'icon.ico', 10, True)
                           "Today's date: ", date, 'icon.ico', 6, True)
         self.talk(f"Today's Date is {date}")
 
-    
-    def playYouTubeVideos(self,task):
+    def playYouTubeVideos(self, task):
         song = task.replace('play', "")
         self.talk(f"playing {song}")
         pywhatkit.playonyt(song)
 
-   
-
     def launchMiniSearchEngine(self):
         notify.show_toast("MINI - Intelligent Search Engine",
-                                  "Launching Search Engine", 'icon.ico', 6, True)
+                          "Launching Search Engine", 'icon.ico', 6, True)
         webbrowser.open('http://127.0.0.1:8000/')
 
     def startFunZone(self):
         play = FunZone()
         notify.show_toast("MINI Intelligent Search Engine",
-                            "Mini Fun Zone has started...", 'icon.ico', 6, True)
+                          "Mini Fun Zone has started...", 'icon.ico', 6, True)
         self.talk("You have Entered MINI Fun Zone")
         while True:
             run = play.fun()
@@ -389,7 +376,7 @@ Pressure: {pressure} | Humidity: {humidity}''', 'icon.ico', 10, True)
             return 0
         task = task.replace("browse ", "")
         webbrowser.open(f"www.{task}.com")
-            
+
     def tasksMiniCanPerform(self):
         littlemini = Mini()
         tasks = littlemini.__dir__()
@@ -397,7 +384,7 @@ Pressure: {pressure} | Humidity: {humidity}''', 'icon.ico', 10, True)
         for allthetasks in tasks:
             if i == 21:
                 break
-            if allthetasks.startswith('__') or allthetasks =='contactList' or allthetasks=='taskArray' or allthetasks=='taskDictionary':
+            if allthetasks.startswith('__') or allthetasks == 'contactList' or allthetasks == 'taskArray' or allthetasks == 'taskDictionary':
                 continue
             self.talk(f"I can {allthetasks}")
             i += 1
@@ -408,18 +395,13 @@ Pressure: {pressure} | Humidity: {humidity}''', 'icon.ico', 10, True)
 
             if 'hello mini' in task:
                 print('...')
-                self.run_mini()
-
-            elif 'stop' in task:
-                print('...')
-                self.talk('Thank You. Have a nice day.')
-                return 'stop'
+                return self.run_mini()
 
             else:
                 self.mini()
         except:
             pass
-    
+
     def run_mini(self):
         try:
             notify.show_toast("MINI - Intelligent Search Engine",
@@ -432,14 +414,19 @@ Pressure: {pressure} | Humidity: {humidity}''', 'icon.ico', 10, True)
             print(task)
 
             for variousTasks in self.taskArray:
-                if variousTasks in task:  
-                    if variousTasks =='who' or variousTasks=='where' or variousTasks=='what':
-                        self.summarizeWikipedia(task,variousTasks)
+
+                if variousTasks in task:
+                    if variousTasks == 'stop':
+                        self.talk('Thank You. Have a nice day.')
+                        return 'stop'
+
+                    if variousTasks == 'who' or variousTasks == 'where' or variousTasks == 'what':
+                        self.summarizeWikipedia(task, variousTasks)
                         return 0
 
                     if variousTasks == 'play' or variousTasks == 'browse':
                         self.browseOnWeb(task, variousTasks)
-                        return 0             
+                        return 0
 
                     self.taskDictionary[variousTasks]()
                     return 0
@@ -447,12 +434,14 @@ Pressure: {pressure} | Humidity: {humidity}''', 'icon.ico', 10, True)
             self.talk("Sorry Could not understand")
         except:
             pass
-    
+
 
 fun = Mini()
-# fun.run_mini() use for fast debugging .. run assistant.py directly
+fun.run_mini()
+#  use for fast debugging .. run assistant.py directly
 
-class FunZone:       
+
+class FunZone:
 
     def fun(self):
         try:
@@ -489,11 +478,11 @@ class FunZone:
 
             elif 'joke' in task:
                 fun.talk(
-            'Open your selfie cam or go stand in front of a mirror. You will see the funniest joke in this world.')
+                    'Open your selfie cam or go stand in front of a mirror. You will see the funniest joke in this world.')
 
             elif 'song' in task:
                 fun.talk('I am bored right now. Go Hang out with your friends')
-               
+
             elif 'created' in task:
                 fun.talk('Some nerds like you')
 
@@ -501,19 +490,18 @@ class FunZone:
                 fun.talk('I dont have time to play with humans.Get a life.')
 
             elif 'single' in task:
-                fun.talk('Its none of your business. But yes, I am not single like you are')
+                fun.talk(
+                    'Its none of your business. But yes, I am not single like you are')
 
             elif 'memory' in task:
                 fun.talk(
-            'Do you remember? One day you proposed your crush and you got friendzoned. I laughed so much that day. lol')
+                    'Do you remember? One day you proposed your crush and you got friendzoned. I laughed so much that day. lol')
 
             elif 'who' in task:
                 fun.talk(
-            'Such a stupid question. You should have known about this. Go increase your general knowledge')
+                    'Such a stupid question. You should have known about this. Go increase your general knowledge')
 
             else:
                 fun.talk('I am busy. Go do it yourself')
         except:
             pass
-
- 
