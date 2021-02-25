@@ -1,8 +1,7 @@
 from modules import *
 
 notify = ToastNotifier()
-notify.show_toast("MINI - Intelligent Search Engine",
-                  "Mini has Started", 'icon.ico', 4, True)
+notify.show_toast("MINI - Intelligent Search Engine","Mini has Started", 'icon.ico', 4, True)
 
 
 root = Tk()
@@ -18,7 +17,9 @@ player = tkvideo("gui.mp4", my_label, loop=1, size=(399, 700))
 start = tk.Button(root, image=btn, height=38, width=399, command=open_mini)
 start.pack()
 player.play()
+
 pygame.init()
 mixer.music.load('song.mp3')
 mixer.music.play(0)
+
 root.mainloop()
