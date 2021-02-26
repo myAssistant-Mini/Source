@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="/media/favicon.png" />
+    <title>Mini Search Engine</title>
+</head>
+
+<style>
+    body {
+        font-size: 10pt;
+        font-family: arial, sans-serif;
+        background-image: url("/media/res.png");
+    }
+
+    a {
+        text-decoration: none;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+    button {
+        font-weight: bold;
+        font-family: arial;
+    }
+
+    .header {
+        background-image: url("/media/logobck.png");
+    }
+
+    .logo {
+        max-width: 100%;
+        margin: 0 auto;
+    }
+
+    .search {
+        text-align: center;
+        clear: both;
+        margin: 0 0 0 0;
+        background-image: url("/media/res.png");
+        background-repeat: no-repeat;
+    }
+
+    .search input {
+        width: 570px;
+        border: 1px solid #d8d8d8;
+        padding: 5px;
+        font-size: 11pt;
+    }
+
+    .search input:focus {
+        outline: none;
+        border: 1px solid #4285f4;
+    }
+
+    .search button {
+        margin: 14px 7px 0 20px;
+        padding: 7px 8px;
+        border-radius: 2px;
+        border: 1px solid #d0d0d0;
+        color: #444444;
+    }
+
+    .search button:hover {
+        box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+    }
+
+    .footer {
+        position: fixed;
+        bottom: 0;
+    }
+</style>
+
+<div class="header">
+    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+</div>
+<div class="search">
+    <div class="logo">
+        <img src="/media/logo.png" height="250" width="600" />
+    </div>
+    <form method="POST" action="search">
+        {% csrf_token %}
+        <input class="search-bar" type="text" name="search" autofocus x-webkit-speech />
+        <div class="search-button">
+            <a href="#"><button type="submit">myMini Engine</button></a>
+        </div>
+    </form>
+</div>
+<div class="footer">
+    <br /><br />
+    <img src="/media/footer2.png" height="40" width="100%" />
+</div>
+
+</html>
