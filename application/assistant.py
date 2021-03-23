@@ -7,6 +7,11 @@
 # pip install tkvideo
 # pip install win10toast
 # pip install PyPDF2 
+# pip install playsound
+# pip install googletrans==3.1.0a0
+# pip install gTTS
+# pip install opencv-python
+
 
 from modules import *
 
@@ -29,7 +34,7 @@ class Mini:
                                'creator': self.tellCreatorsInformation, 'message': self.makeWhatsappMessage, 'news': self.readNews,
                                'invite': self.inviteForAGoogleMeet, 'engine': self.launchMiniSearchEngine, 'fun': self.startFunZone}
 
-        self.taskArray = ['stop', 'intro', 'contact', 'time', 'date', 'selfie', 'novel', 'read', 'note', 'do', 'weather',
+        self.taskArray = ['stop', 'intro', 'contact', 'time', 'date', 'selfie', 'novel', 'read', 'note', 'do', 'weather', 'fun',
                           'instagram', 'email', 'engine', 'creator', 'message', 'news', 'invite', 'play', 'browse', 'who', 'what', 'where']
 
     def talk(self, text: str):
@@ -37,11 +42,16 @@ class Mini:
         engine.runAndWait()
 
     def hearYou(self, time=3):
-        with rec.Microphone() as source:
-            voice = listener.record(source, time)
-            command = listener.recognize_google(voice)
-            low = command.lower()
-        return low
+
+        try:
+            with rec.Microphone() as source:
+                voice = listener.record(source, time)
+                command = listener.recognize_google(voice)
+                low = command.lower()
+
+            return low
+        except:
+            pass
 
     def makeWhatsappMessage(self):
 
@@ -49,7 +59,7 @@ class Mini:
         friend = self.hearYou()
 
         self.talk("What is the message")
-        message = self.hearYou(10)
+        message = self.hearYou(5)
 
         hour = datetime.datetime.now().strftime('%H')
         minute = datetime.datetime.now().strftime('%M')
@@ -58,7 +68,7 @@ class Mini:
         notify.show_toast("MINI - Intelligent Search Engine",
                           "Message will be sent in a minute", 'icon.ico', 20, True)
 
-        mobile = {'bhavesh': '+919136298868', 'atharva': '+918097985835',
+        mobile = {'bhavesh': '+919136298868', 'myself': '+918097985835',
                   'yogesh': '+918329863550', 'rahul': '+919930656344'}
 
         if mobile[friend] is None:
@@ -103,8 +113,8 @@ class Mini:
 
             notify.show_toast(
                 "Weather Report", f'''City: {city.upper()}
-            Temperature: {temperature} C | Report: {report[0]['description']}
-            Pressure: {pressure} | Humidity: {humidity}''', 'icon.ico', 10, True)
+    Temperature: {temperature} C | Report: {report[0]['description']}
+    Pressure: {pressure} | Humidity: {humidity}''', 'icon.ico', 10, True)
 
             self.talk(f'Weather For City {city}')
             self.talk(f"Temperature: {temperature} degree celsius")
@@ -199,7 +209,7 @@ class Mini:
         self.talk('Creating a meeting and inviting your friends in a minute')
         url = 'meet.google.com'
         webbrowser.open(url)
-        time.sleep(8)
+        time.sleep(13)
         pyautogui.press('enter')
         time.sleep(2)
         pyautogui.press('down')
@@ -211,7 +221,7 @@ class Mini:
         pyautogui.click(810, 450)
         time.sleep(1)
         pyautogui.write(
-            'atharva.r.bhagat@gmail.com, atharvabhagat218@gmail.com, 31bhavesh.mhadse2001@gmail.com')
+            'atharva.r.bhagat@gmail.com, 31bhavesh.mhadse2001@gmail.com , yogeshvghate@gmail.com , rahulprajapati3060@gmail.com')
         pyautogui.press('enter')
         time.sleep(2)
         pyautogui.click(1170, 800)
@@ -271,7 +281,7 @@ class Mini:
         emails = {"atharva": 'atharva.r.bhagat@gmail.com',
                   "bhavesh": 'bhaveshmhadse9@gmail.com',
                   "yogesh": 'yogeshvghate@gmail.com',
-                  "creators": 'atharva.r.bhagat@gmail.com, bhaveshmhadse9@gmail.com, yogeshvghate@gmail.com'}
+                  "creators": 'atharva.r.bhagat@gmail.com, bhaveshmhadse9@gmail.com, yogeshvghate@gmail.com , rahulprajapati3060@gmail.com'}
 
         receiver = emails[friend]
         notify.show_toast("MINI - Intelligent Search Engine",
@@ -305,7 +315,7 @@ class Mini:
         book = open('novel.pdf', 'rb')
         read = PyPDF2.PdfFileReader(book)
         pages = read.numPages
-        for num in range(4, pages):
+        for num in range(4, 5):
             page = read.getPage(num)
             text = page.extractText()
             self.talk(text)
