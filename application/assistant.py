@@ -11,6 +11,10 @@
 # pip install googletrans==3.1.0a0
 # pip install gTTS
 # pip install opencv-python
+# pip install pyautogui
+# pip install webbrowser
+# pip install wikipedia
+# pip install pygame
 
 
 from modules import *
